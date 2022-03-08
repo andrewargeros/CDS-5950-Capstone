@@ -89,7 +89,7 @@ for slug in tqdm(beer_styles):
 
 all_beer_urls = [item for sublist in all_beer_urls for item in sublist]
 
-print(f"Found {len(all_beer_urls)} beers")
+print(f"-----------------------Found {len(all_beer_urls)} beers-----------------------")
 
 all_data = []
 for url in tqdm(all_beer_urls):
