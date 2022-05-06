@@ -49,6 +49,7 @@ def get_images(link, headers, outpath):
     return info
   except:
     print("Error")
+    return None
 
 
 def get_beer_urls(base_link, headers):
@@ -94,9 +95,11 @@ print(f"-----------------------Found {len(all_beer_urls)} beers-----------------
 all_data = []
 for url in tqdm(all_beer_urls):
   page_link = 'https://untappd.com' + url + "/photos"
-  data = get_images(page_link, make_headers(), './Images')
+  data = get_images(page_link, make_headers(), '/mnt/c/personalscripts/cds-5950-capstone/images')
   all_data.append(data)
   print(data)
 
-shutil.make_archive('Image_archive', 'zip', './Images')
-pd.DataFrame(all_data).to_csv('./all_data.csv', index=False)
+# shutil.make_archive('Image_archive', 'zip', '../Images')
+data = pd.DataFrame([d for d in all_data if d is not None])
+data.to_csv('/mnt/c/personalscripts/cds-5950-capstone/all_data.csv', index=False)
+data['style'].drop_duplicates().to_csv("../all_beer_styles.csv", index=False)
