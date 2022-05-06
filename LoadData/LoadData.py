@@ -5,6 +5,7 @@ from albumentations.pytorch import ToTensorV2
 import torch
 import cv2
 import glob
+import re
 import numpy as np
 import random
 
@@ -16,9 +17,12 @@ classes = [] #to store class values
 
 for data_path in glob.glob(train_data_path + '/*'):
     classes.append(data_path.split('/')[-1]) 
+
     train_image_paths.append(glob.glob(data_path + '/*'))
     
 train_image_paths = [path for sublist in train_image_paths for path in sublist]
+train_image_paths = [re.sub(r"/mnt/c/PersonalScripts", "/content", x) for x in train_image_paths]
+
 random.shuffle(train_image_paths)
 
 print('train_image_path example: ', train_image_paths[0])
@@ -29,6 +33,7 @@ for data_path in glob.glob(test_data_path + '/*'):
     test_image_paths.append(glob.glob(data_path + '/*'))
 
 test_image_paths = [path for sublist in test_image_paths for path in sublist]
+test_image_paths = [re.sub(r"/mnt/c/PersonalScripts", "/content", x) for x in test_image_paths]
 
 print("Train size: {}\nTest size:  {}".format(len(train_image_paths), len(test_image_paths)))
 

@@ -67,7 +67,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 trainloader = torch.load(
-    '/mnt/c/personalscripts/cds-5950-capstone/LoadData/train_loader.pt')
+    '/content/cds-5950-capstone/LoadData/train_loader.pt')
 
 for epoch in range(2):  # loop over the dataset multiple times
 
@@ -75,7 +75,7 @@ for epoch in range(2):  # loop over the dataset multiple times
   for i, data in enumerate(trainloader, 0):
     # get the inputs; data is a list of [inputs, labels]
     inputs, labels = data
-    images = images.to(device)
+    inputs = inputs.to(device)
     labels = labels.to(device)
 
     # zero the parameter gradients
@@ -103,15 +103,15 @@ def get_accuracy(logit, target, batch_size):
     return accuracy.item()
 
 
-testloader = torch.load("/mnt/c/personalscripts/cds-5950-capstone/LoadData/train_loader.pt")
+testloader = torch.load("/content/cds-5950-capstone/LoadData/test_loader.pt")
 
 test_acc = 0.0
 for i, (images, labels) in enumerate(testloader, 0):
     images = images.to(device)
     labels = labels.to(device)
     outputs = net(images)
-    test_acc += get_accuracy(outputs, labels, BATCH_SIZE)
+    test_acc += get_accuracy(outputs, labels, 128)
         
 print('Test Accuracy: %.2f'%( test_acc/i))
 
-torch.save(net, '/mnt/c/personalscripts/cds-5950-capstone/Models/convolution.pt')
+torch.save(net, '/content/cds-5950-capstone/Models/convolution.pt')
