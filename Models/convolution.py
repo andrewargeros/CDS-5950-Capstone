@@ -94,3 +94,24 @@ for epoch in range(2):  # loop over the dataset multiple times
       running_loss = 0.0
 
 print('Finished Training')
+
+
+def get_accuracy(logit, target, batch_size):
+    corrects = (torch.max(logit, 1)[1].view(
+        target.size()).data == target.data).sum()
+    accuracy = 100.0 * corrects/batch_size
+    return accuracy.item()
+
+
+testloader = torch.load("/mnt/c/personalscripts/cds-5950-capstone/LoadData/train_loader.pt")
+
+test_acc = 0.0
+for i, (images, labels) in enumerate(testloader, 0):
+    images = images.to(device)
+    labels = labels.to(device)
+    outputs = net(images)
+    test_acc += get_accuracy(outputs, labels, BATCH_SIZE)
+        
+print('Test Accuracy: %.2f'%( test_acc/i))
+
+torch.save(net, '/mnt/c/personalscripts/cds-5950-capstone/Models/convolution.pt')
