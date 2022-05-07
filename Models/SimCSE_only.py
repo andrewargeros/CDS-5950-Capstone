@@ -15,6 +15,11 @@ classes = ['Dark Malty Beers',
            'NOT APPLICABLE',
            'Stouts']
 
+n_input_channels = 3
+n_units_1 = 16
+n_units_2 = 16
+n_units_3 = 16
+
 idx_to_class = {i: j for i, j in enumerate(classes)}
 class_to_idx = {value: key for key, value in idx_to_class.items()}
 
@@ -38,27 +43,58 @@ class Brewskis(Dataset):
 
     return image, label
 
-
-class Net(nn.Module):
+class CSEnet(nn.Module):
   def __init__(self):
     super().__init__()
-    self.conv1 = nn.Conv2d(3, 6, 5)
-    self.pool = nn.MaxPool2d(2, 2)
-    self.conv2 = nn.Conv2d(6, 16, 5)
-    self.fc1 = nn.Linear(59536, 128)
-    self.fc2 = nn.Linear(128, 128)
-    self.fc3 = nn.Linear(128, 128)
 
-  def forward(self, x):
-    x = self.pool(F.relu(self.conv1(x)))
-    x = self.pool(F.relu(self.conv2(x)))
-    x = torch.flatten(x, 1)  # flatten all dimensions except batch
-    x = F.relu(self.fc1(x))
-    x = F.relu(self.fc2(x))
-    x = self.fc3(x)
-    return x
+    self.scs1 = SimCSE(
+        in_channels=n_input_channels,
+        out_channels=n_units_1,
+        kernel_size=5,
+        padding=0)
+    self.pool1 = MaxAbsPool2d(kernel_size=2, stride=2, ceil_mode=True)
 
-net = Net()
+    self.scs2 = SimCSE(
+        in_channels=n_units_1,
+        out_channels=n_units_2,
+        kernel_size=5,
+        padding=1)
+    self.pool2 = MaxAbsPool2d(kernel_size=2, stride=2, ceil_mode=True)
+
+    self.scs3 = SimCSE(
+        in_channels=n_units_2,
+        out_channels=n_units_3,
+        kernel_size=5,
+        padding=1)
+    self.pool3 = MaxAbsPool2d(kernel_size=4, stride=4, ceil_mode=True)
+    self.out = nn.Linear(in_features=n_units_3, out_features=len(classes))
+
+  def n_params(self):
+    n = 0
+    for scs in [self.scs1, self.scs2, self.scs3]:
+      n += (
+          np.prod(scs.weight.shape) +
+          np.prod(scs.p.shape) +
+          np.prod(scs.q.shape))
+    n += np.prod(self.out.weight.shape)
+    return n
+
+  def forward(self, t):
+    t = self.scs1(t)
+    t = self.pool1(t)
+
+    t = self.scs2(t)
+    t = self.pool2(t)
+
+    t = self.scs3(t)
+    t = self.pool3(t)
+
+    t = t.reshape(-1, n_units_3)
+    t = self.out(t)
+
+    return t
+
+net = CSEnet()
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 net = net.to(device)
@@ -116,4 +152,4 @@ for i, (images, labels) in enumerate(testloader, 0):
         
 print('Test Accuracy: %.2f'%( test_acc/i))
 
-torch.save(net, '/content/cds-5950-capstone/Models/convolution.pt')
+torch.save(net, '/content/cds-5950-capstone/Models/SimCSE.pt')
