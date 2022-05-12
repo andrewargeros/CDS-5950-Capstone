@@ -9,6 +9,8 @@ from torch.nn import functional as F
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
+st.set_page_config(layout="wide")
+
 class Net(nn.Module):
   def __init__(self):
     super().__init__()
@@ -257,8 +259,8 @@ classes = ['Dark Malty Beers',
            'Fruit Beer',
            'IPA',
            'Light Beers',
-           'nan',
            'NOT APPLICABLE',
+            None,
            'Stouts']
 
 def make_prediction(img, classes, model):
@@ -268,7 +270,9 @@ def make_prediction(img, classes, model):
   out = model(b)
   prob = F.softmax(out, dim=1)[0] * 100
   _, indices = torch.sort(out, descending=True)
-  return [(classes[idx], prob[idx].item()) for idx in indices[0][:5]]
+  prob =  [(classes[idx], prob[idx].item()) for idx in indices[0][:5]]
+  prob = [i for i in prob if i[0] is not None]
+  return prob
 
 st.markdown("""<style>
 .css-fk4es0 {
@@ -276,7 +280,7 @@ st.markdown("""<style>
     top: 0px;
     right: 0px;
     left: 0px;
-    height: 0.75rem;
+    height: 1rem;
     background-image: linear-gradient(
 90deg, #bc7012 0%,#efd002 100%);
     z-index: 1000020;
@@ -286,10 +290,20 @@ st.markdown("""<style>
 with st.container():
   st.title("What Beer is this?")
   st.header("Computational Data Science Capstone Project")
+  st.markdown("""
+  This project is part of my submission for the [Computational Data Science Capstone](https://github.com/andrewargeros/CDS-5950-Capstone).
+  The goal of the model is to take a picture of a beer and predict what style beer it is. It currently predicts using two models: one
+  Convolutional Neural Network (CNN) and one Sharpened CoSine Similarity Model (SimCSE). Read more about the process of creating these models
+  [here](https://www.andrewargeros.com/post/image-classification-efficiency-for-beers). Current predicted classes are: `[Dark Malty Beers, 
+  Fruit Beer, IPA, Light Beers, Stouts, NOT APPLICABLE]`.
+  """)
   st.markdown("---")
-  st.markdown("#### Take a picture to guess the beer:")
 
-  picture = st.camera_input("")
+  p1,p2,p3 = st.columns([1,2,1])
+
+  with p2:
+    st.markdown("#### Take a picture to guess the beer:")
+    picture = st.camera_input("")
 
   if picture:
     bytes_data = picture.getvalue()

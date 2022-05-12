@@ -11,7 +11,6 @@ classes = ['Dark Malty Beers',
            'Fruit Beer',
            'IPA',
            'Light Beers',
-           'nan',
            'NOT APPLICABLE',
            'Stouts']
 
