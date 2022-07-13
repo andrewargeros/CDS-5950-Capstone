@@ -1,6 +1,6 @@
 # CDS 5950- Computer Vision Capstone Project
 
-This reposistory contains code for my capstone project for the Computational Data Science major at Hamline University. The project is a series of computer vision algorithms that are used to classify images of beer by style. The project evaluates the efficacy and efficiency differences between Sharpened Cosine Similarity (SimCSE) and Convolutions for image classification.
+This reposistory contains code for my capstone project for the Computational Data Science major at Hamline University. The project is a series of computer vision algorithms that are used to classify images of beer by style. The project evaluates the efficacy and efficiency differences between Sharpened Cosine Similarity (CosSim) and Convolutions for image classification.
 
 Presented 2022-05-11 for CDS-5950 CDS Capstone Project
 
@@ -18,17 +18,17 @@ To clean the images, I used CLIP to sort the images based on whether or not they
  
 ## Models
 
-The aim of this projet is to evaluate the efficiency of the two image classification algorithms. The models are Sharpened Cosine Similarity (SimCSE), a Convolutional Neural Network, CoAtNet0 and the CoAtNet0 architecture replacing the 3 Convolutional layers with SimCSE. The models were intentionally undertrained for the sake of brevity. Fully trained versions of the model architectures would have been much more computationally and financially expensive. These models would obviously have been much more accurate.
+The aim of this projet is to evaluate the efficiency of the two image classification algorithms. The models are Sharpened Cosine Similarity (CosSim), a Convolutional Neural Network, CoAtNet0 and the CoAtNet0 architecture replacing the 3 Convolutional layers with CosSim. The models were intentionally undertrained for the sake of brevity. Fully trained versions of the model architectures would have been much more computationally and financially expensive. These models would obviously have been much more accurate.
 
 *Note: 6 Classes
 
 |Model Name        | Parameters | Training Time | Accuracy | Latency |
 |------------------|------------|---------------|----------|---------|
 | CNN              | 7,656,632  | 03:17:22      | 49.14%   | 0.09    |
-| SimCSE           | 39,261     | 02:01:48      | 39.52%   | 0.06    |
+| CosSim           | 39,261     | 02:01:48      | 39.52%   | 0.06    |
 | CoAtNet          | 16,054,392 | 04:46:13      | 58.88%   | 0.12    |
-| CoAtNet w/ SimCSE| 13,107,902 | 06:27:27      | 48.26%   | 0.09    |
+| CoAtNet w/ CosSim| 13,107,902 | 06:27:27      | 48.26%   | 0.09    |
 
 ## Demo 
 
-Try out the differences between Convolutions and SimCSE for yourself. Crack a beer and head to the [Demo](https://share.streamlit.io/andrewargeros/cds-5950-app/main/app.py) Streamlit app.
+Try out the differences between Convolutions and CosSim for yourself. Crack a beer and head to the [Demo](https://share.streamlit.io/andrewargeros/cds-5950-app/main/app.py) Streamlit app.
